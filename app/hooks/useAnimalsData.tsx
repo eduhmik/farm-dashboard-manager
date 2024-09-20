@@ -21,7 +21,8 @@ export const useAnimalsData = (): UseAnimalsReturnType => {
       const response = await axios.get(
         `${base_url}/v1/animals`, {
           headers: {
-            Authorization: `Bearer ${session?.data.token}`,
+            // @ts-ignore
+            Authorization: `Bearer ${session?.accessToken}`,
           },
         }
       );
