@@ -2,39 +2,73 @@ import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
-import { sql } from '@vercel/postgres';
-import type { User } from '@/app/lib/definitions';
-import bcrypt from 'bcrypt';
-
-async function getUser(email: string): Promise<User | undefined> {
-    try {
-        const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
-        return user.rows[0];
-    } catch (error) {
-        console.error('Failed to fetch user:', error);
-        throw new Error('Failed to fetch user.');
-    }
-}
+import { base_url } from './app/lib/utils';
+import axios from 'axios';
 
 export const { auth, signIn, signOut } = NextAuth({
     ...authConfig,
-    providers: [Credentials({
-        async authorize(credentials) {
-            const parsedCredentials = z
-                .object({ email: z.string().email(), password: z.string().min(6) })
-                .safeParse(credentials);
+    providers: [
+        Credentials({
+            async authorize(credentials) {
+                const parsedCredentials = z
+                    .object({ email: z.string().email(), password: z.string().min(6) })
+                    .safeParse(credentials);
 
-            if (parsedCredentials.success) {
+                if (!parsedCredentials.success) {
+                    console.log('Invalid credentials format');
+                    return null;
+                }
+
                 const { email, password } = parsedCredentials.data;
-                const user = await getUser(email);
-                if (!user) return null;
-                const passwordsMatch = await bcrypt.compare(password, user.password);
 
-                if (passwordsMatch) return user;
+                try {
+                    // Replace with your API endpoint
+                    const response = await axios.post(`${base_url}/v1/auth/login`, { email, password });
+
+                    if (response.status === 200 && response.data.status === 200) {
+                        const { user, token } = response.data.data;
+                        return {
+                            user: {
+                                id: user._id,
+                                email: user.email,
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                            },
+                            token: token
+                        };
+                    } else {
+                        console.log('Invalid credentials. Failed to authenticate');
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('Failed to authenticate using API:', error);
+                    return null;
+                }
+            },
+        })
+    ],
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.token = (user as any).token as string;
+                token.accessToken = (user as any).token
             }
-
-            console.log('Invalid credentials. Failed to authenticate');
-            return null;
+            console.log("Token", token)
+            console.log("User", user)
+            return token;
         },
-    })]
+        async session({ session, token }) {
+            console.log("HERRRRREEEEE")
+            console.log('SESSION', session)
+            console.log('TOKEN', token)
+
+            // (session as any).accessToken = token.accessToken;
+
+            // console.log('Session returned:', session);
+            session.data.token = token.token as string;
+            // @ts-ignore
+            session.accessToken = token.accessToken
+            return session;
+        }
+    }
 });

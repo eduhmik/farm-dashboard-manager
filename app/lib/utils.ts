@@ -67,3 +67,5 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     totalPages,
   ];
 };
+
+export const base_url = "https://farm-management-system-3o63.onrender.com"
