@@ -1,14 +1,28 @@
-import { SessionProvider } from "next-auth/react";
-import React, { ReactNode } from "react";
+'use client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SessionProvider } from 'next-auth/react';
+import React, { ReactNode, Suspense } from 'react';
 
 interface Props {
-    children: ReactNode;
+  children: ReactNode;
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
 function Provider({ children }: Props) {
-    return (
-        <SessionProvider>{children}</SessionProvider>
-    );
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SessionProvider>
+        <Suspense>{children}</Suspense>
+      </SessionProvider>
+    </QueryClientProvider>
+  );
 }
 
 export default Provider;

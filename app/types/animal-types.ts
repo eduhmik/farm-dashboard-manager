@@ -31,17 +31,10 @@ type UpdatedBy = {
     updatedAt: string;
 };
 
-export interface ApiResponse {
+export interface AnimalsResponse {
     message: string;
     status: number;
     data: {
         animals: Animal[];
     };
 };
-
-export interface UseAnimalsReturnType {
-    fetchAnimalData: () => Promise<void>;
-    animalsData: ApiResponse | null;
-    loading: boolean;
-    error: string | null;
-}
