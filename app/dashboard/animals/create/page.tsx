@@ -1,5 +1,5 @@
-import Form from '@/app/ui/invoices/create-form';
-import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
+import Form from '@/app/ui/animals/create-form';
+import Breadcrumbs from '@/app/ui/animals/breadcrumbs';
 import { fetchCustomers } from '@/app/lib/data';
  
 export default async function Page() {
@@ -11,7 +11,7 @@ export default async function Page() {
         breadcrumbs={[
           { label: 'Animals', href: '/dashboard/animals' },
           {
-            label: 'Create Invoice',
+            label: 'Create Animal',
             href: '/dashboard/animals/create',
             active: true,
           },

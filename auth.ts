@@ -62,19 +62,9 @@ export const {
         token.token = (user as any).token as string;
         token.accessToken = (user as any).token;
       }
-      console.log('Token', token);
-      console.log('User', user);
       return token;
     },
     async session({ session, token }) {
-      console.log('HERRRRREEEEE');
-      console.log('SESSION', session);
-      console.log('TOKEN', token);
-
-      // (session as any).accessToken = token.accessToken;
-
-      // console.log('Session returned:', session);
-    //   session.data.token = token.token as string;
       // @ts-ignore
       session.accessToken = token.accessToken;
       return session;

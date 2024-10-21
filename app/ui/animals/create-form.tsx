@@ -21,7 +21,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
         {/* Customer Name */}
         <div className="mb-4">
           <label htmlFor="customer" className="mb-2 block text-sm font-medium">
-            Choose customer
+            Choose farm
           </label>
           <div className="relative">
             <select
@@ -32,7 +32,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               aria-describedby='customer-error'
             >
               <option value="" disabled>
-                Select a customer
+                Select a farm
               </option>
               {customers.map((customer) => (
                 <option key={customer.id} value={customer.id}>
