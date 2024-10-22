@@ -4,43 +4,131 @@ import { useActionState } from 'react';
 import { CustomerField } from '@/app/lib/definitions';
 import Link from 'next/link';
 import {
-  CheckIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
-  UserCircleIcon,
+  BugAntIcon,
+  CalendarIcon,
+  MapIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
 import { createInvoice, State } from '@/app/lib/actions';
+import { FireIcon } from '@heroicons/react/20/solid';
+import { useFarmsHook } from '@/app/hooks/useFarmData';
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
+  const { useFarmsQuery } = useFarmsHook();
+  const { data: farmsData, isLoading: loadingFarms, error } = useFarmsQuery();
+  const farms = farmsData?.data.farms;
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(createInvoice, initialState);
   return (
     <form action={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        {/* Customer Name */}
+        {/* Farm Name */}
         <div className="mb-4">
           <label htmlFor="customer" className="mb-2 block text-sm font-medium">
             Choose farm
           </label>
           <div className="relative">
             <select
-              id="customer"
-              name="customerId"
+              id="farm"
+              name="farmId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               defaultValue=""
-              aria-describedby='customer-error'
+              aria-describedby='farm-error'
             >
               <option value="" disabled>
                 Select a farm
               </option>
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.name}
+              {farms?.map((farm) => (
+                <option key={farm._id} value={farm._id}>
+                  {farm.name}
                 </option>
               ))}
             </select>
-            <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            <MapIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
+          <div id="farm-error" aria-live="polite" aria-atomic="true">
+            <p className="mt-2 text-sm text-red-500">
+              {error?.message}
+            </p>
+          </div>
+        </div>
+
+        {/* Animal Name */}
+        <div className="mb-4">
+          <label htmlFor="name" className="mb-2 block text-sm font-medium">
+            Enter the name of the animal
+          </label>
+          <div className="relative mt-2 rounded-md">
+            <div className="relative">
+              <input
+                id="name"
+                name="animal-name"
+                type="text"
+                placeholder="Enter animal name"
+                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                aria-describedby='name-error'
+              />
+              <BugAntIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+            <div id="name-error" aria-live="polite" aria-atomic="true">
+              {state?.errors?.amount &&
+                state.errors.amount.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Animal Breed */}
+        <div className="mb-4">
+          <label htmlFor="breed" className="mb-2 block text-sm font-medium">
+            Enter the breed of the animal
+          </label>
+          <div className="relative mt-2 rounded-md">
+            <div className="relative">
+              <input
+                id="breed"
+                name="animal-breed"
+                type="text"
+                placeholder="Enter animal breed"
+                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                aria-describedby='breed-error'
+              />
+              <FireIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+            <div id="breed-error" aria-live="polite" aria-atomic="true">
+              {state?.errors?.amount &&
+                state.errors.amount.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Animal Gender */}
+        <div className="mb-4">
+          <label htmlFor="gender" className="mb-2 block text-sm font-medium">
+            Select animal sex
+          </label>
+          <div className="relative">
+            <select
+              id="sex"
+              name="animal-sex"
+              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue=""
+              aria-describedby='sex-error'
+            >
+              <option value="" disabled>
+                Select animal sex
+              </option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+            </select>
+            <MapIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
           <div id="customer-error" aria-live="polite" aria-atomic="true">
             {state?.errors?.customerId &&
@@ -52,36 +140,28 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
           </div>
         </div>
 
-        {/* Invoice Amount */}
+        {/* Birth Date */}
         <div className="mb-4">
-          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
-            Choose an amount
+          <label htmlFor="birth-date" className="mb-2 block text-sm font-medium">
+            Enter the birth date of the animal
           </label>
           <div className="relative mt-2 rounded-md">
             <div className="relative">
               <input
-                id="amount"
-                name="amount"
-                type="number"
-                step="0.01"
-                placeholder="Enter USD amount"
+                id="birth-date"
+                name="birth-date"
+                type="date"
+                placeholder="Enter birth date"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                aria-describedby='amount-error'
+                aria-describedby='birth-date-error'
+                max={new Date().toISOString().split("T")[0]}
               />
-              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-            <div id="amount-error" aria-live="polite" aria-atomic="true">
-              {state?.errors?.amount &&
-                state.errors.amount.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
+              <CalendarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
           </div>
         </div>
 
-        {/* Invoice Status */}
+        {/* Invoice Status
         <fieldset>
           <legend className="mb-2 block text-sm font-medium">
             Set the invoice status
@@ -129,7 +209,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 ))}
             </div>
           </div>
-        </fieldset>
+        </fieldset> */}
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link
@@ -138,7 +218,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
         >
           Cancel
         </Link>
-        <Button type="submit">Create Invoice</Button>
+        <Button type="submit">Create Animal</Button>
       </div>
     </form>
   );
