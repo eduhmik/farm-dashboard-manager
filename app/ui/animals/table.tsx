@@ -107,7 +107,7 @@ export default async function AnimalsTable({
                     {animal.gender}
                   </td>
                   <td className='whitespace-nowrap px-3 py-3'>
-                    {animal.farm ? animal.farm : 'N/A'}
+                    {animal.farm ? animal.farm.name : 'N/A'}
                   </td>
                   <td className='whitespace-nowrap py-3 pl-6 pr-3'>
                     <div className='flex justify-end gap-3'>

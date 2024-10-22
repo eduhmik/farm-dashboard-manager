@@ -1,7 +1,6 @@
 'use client';
-
-import { useActionState } from 'react';
-import { CustomerField } from '@/app/lib/definitions';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation'; 
 import Link from 'next/link';
 import {
   BugAntIcon,
@@ -9,18 +8,44 @@ import {
   MapIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
-import { createInvoice, State } from '@/app/lib/actions';
 import { FireIcon } from '@heroicons/react/20/solid';
 import { useFarmsHook } from '@/app/hooks/useFarmData';
+import { CreateAnimalPayload } from '@/app/types/createAnimalPayload';
+import { createAnimalData } from '@/app/api/auth/[...nextauth]/createAnimal';
 
-export default function Form({ customers }: { customers: CustomerField[] }) {
+const CreateAnimalForm = () => {
+  const router = useRouter();
   const { useFarmsQuery } = useFarmsHook();
   const { data: farmsData, isLoading: loadingFarms, error } = useFarmsQuery();
   const farms = farmsData?.data.farms;
-  const initialState: State = { message: null, errors: {} };
-  const [state, formAction] = useActionState(createInvoice, initialState);
+  const [formData, setFormData] = useState<CreateAnimalPayload>({
+    name: '',
+    type: 'cow',
+    breed: '',
+    birthDate: '',
+    gender: '',
+    farm: '',
+    milkProductions: [],
+    healthRecords: [],
+    breedingHistory: [],
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const response  = await createAnimalData(formData)
+    console.log(response.status)
+    if (response?.status === 201) {
+      router.push('/dashboard/animals')
+    }
+  };
+
+
   return (
-    <form action={formAction}>
+    <form onSubmit={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Farm Name */}
         <div className="mb-4">
@@ -30,9 +55,11 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
           <div className="relative">
             <select
               id="farm"
-              name="farmId"
+              name="farm"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               defaultValue=""
+              value={formData.farm}
+              onChange={handleChange}
               aria-describedby='farm-error'
             >
               <option value="" disabled>
@@ -62,22 +89,24 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
             <div className="relative">
               <input
                 id="name"
-                name="animal-name"
+                name="name"
                 type="text"
+                value={formData.name}
+                onChange={handleChange}
                 placeholder="Enter animal name"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby='name-error'
               />
               <BugAntIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
-            <div id="name-error" aria-live="polite" aria-atomic="true">
-              {state?.errors?.amount &&
-                state.errors.amount.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
+            {/* <div id="name-error" aria-live="polite" aria-atomic="true">
+                {state?.errors?.amount &&
+                  state.errors.amount.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div> */}
           </div>
         </div>
 
@@ -90,54 +119,58 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
             <div className="relative">
               <input
                 id="breed"
-                name="animal-breed"
+                name="breed"
                 type="text"
+                value={formData.breed}
+                onChange={handleChange}
                 placeholder="Enter animal breed"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby='breed-error'
               />
               <FireIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
-            <div id="breed-error" aria-live="polite" aria-atomic="true">
-              {state?.errors?.amount &&
-                state.errors.amount.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
+            {/* <div id="breed-error" aria-live="polite" aria-atomic="true">
+                {state?.errors?.amount &&
+                  state.errors.amount.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div> */}
           </div>
         </div>
 
         {/* Animal Gender */}
         <div className="mb-4">
           <label htmlFor="gender" className="mb-2 block text-sm font-medium">
-            Select animal sex
+            Select animal gender
           </label>
           <div className="relative">
             <select
-              id="sex"
-              name="animal-sex"
+              id="gender"
+              name="gender"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               defaultValue=""
+              value={formData.gender}
+              onChange={handleChange}
               aria-describedby='sex-error'
             >
               <option value="" disabled>
-                Select animal sex
+                Select animal gender
               </option>
               <option value="female">Female</option>
               <option value="male">Male</option>
             </select>
             <MapIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
-          <div id="customer-error" aria-live="polite" aria-atomic="true">
-            {state?.errors?.customerId &&
-              state.errors.customerId.map((error: string) => (
-                <p className="mt-2 text-sm text-red-500" key={error}>
-                  {error}
-                </p>
-              ))}
-          </div>
+          {/* <div id="customer-error" aria-live="polite" aria-atomic="true">
+              {state?.errors?.customerId &&
+                state.errors.customerId.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div> */}
         </div>
 
         {/* Birth Date */}
@@ -148,9 +181,11 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
           <div className="relative mt-2 rounded-md">
             <div className="relative">
               <input
-                id="birth-date"
-                name="birth-date"
+                id="birthDate"
+                name="birthDate"
                 type="date"
+                value={formData.birthDate}
+                onChange={handleChange}
                 placeholder="Enter birth date"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby='birth-date-error'
@@ -222,4 +257,6 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
       </div>
     </form>
   );
-}
+};
+
+export default CreateAnimalForm;

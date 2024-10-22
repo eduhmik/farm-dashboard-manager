@@ -1,5 +1,5 @@
 // Type for creating a new animal
-interface CreateAnimalPayload {
+export interface CreateAnimalPayload {
     name: string;
     type: string;
     breed: string;

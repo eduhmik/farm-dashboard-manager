@@ -5,11 +5,11 @@ export interface Animal {
     breed: string;
     birthDate: string;
     gender: string;
-    farm: string | null;
+    farm: Farm | null;
     milkProductions: any[]; // Replace 'any' with a specific type if known
     healthRecords: any[];   // Replace 'any' with a specific type if known
     breedingHistory: any[]; // Replace 'any' with a specific type if known
-    createdBy: User | null;
+    createdBy: User | null | string;
     updatedBy: UpdatedBy[];
     __v: number;
     isDeleted: boolean;
@@ -31,10 +31,31 @@ type UpdatedBy = {
     updatedAt: string;
 };
 
+type Farm = {
+    _id: string;
+    name: string;
+    location: string;
+    animals: any[]; // Can be typed specifically if needed
+    inventory: any[]; // Can be typed specifically if needed
+    users: any[]; // Can be typed specifically if needed
+    createdBy: string;
+    updatedBy: UpdatedBy[];
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+    isDeleted: boolean;
+}
+
 export interface AnimalsResponse {
     message: string;
     status: number;
     data: {
         animals: Animal[];
     };
+};
+
+export interface AnimalResponse {
+    message: string;
+    status: number;
+    data: Animal;
 };

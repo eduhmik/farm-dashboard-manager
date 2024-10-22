@@ -1,9 +1,9 @@
-import Form from '@/app/ui/animals/create-form';
+import CreateAnimalForm from '@/app/ui/animals/create-form';
 import Breadcrumbs from '@/app/ui/animals/breadcrumbs';
-import { fetchCustomers } from '@/app/lib/data';
+// import { fetchCustomers } from '@/app/lib/data';
  
 export default async function Page() {
-  const customers = await fetchCustomers();
+  // const customers = await fetchCustomers();
  
   return (
     <main>
@@ -17,7 +17,7 @@ export default async function Page() {
           },
         ]}
       />
-      <Form customers={customers} />
+      <CreateAnimalForm />
     </main>
   );
 }
